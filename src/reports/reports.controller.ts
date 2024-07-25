@@ -9,13 +9,12 @@ import {
   Req,
 } from '@nestjs/common';
 import { ReportsService } from './reports.service';
-import { Roles } from 'src/auth/roles.decorator';
 import { Role } from 'src/auth/schemas/user.schema';
 import { CreateReportDto } from './create-report.dto';
 import { FollowUpDto } from './followup.dto';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { UpdateReportDto } from './update-report.dto';
+import { Roles } from 'src/auth/roles.decorator';
 
 @Controller('reports')
 export class ReportsController {
