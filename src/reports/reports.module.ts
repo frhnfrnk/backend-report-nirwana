@@ -6,19 +6,17 @@ import { ReportsController } from './reports.controller';
 import { AuthModule } from 'src/auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from 'src/auth/roles.guard';
-import { JwtStrategy } from 'src/auth/jwt.strategy';
-import { User, UserSchema } from 'src/auth/schemas/user.schema';
-import { AuthService } from 'src/auth/auth.service';
+import { PassportModule } from '@nestjs/passport';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Module({
   imports: [
     AuthModule,
+    PassportModule,
     MongooseModule.forFeature([{ name: Report.name, schema: ReportSchema }]),
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
   providers: [
     ReportsService,
-    AuthService,
     {
       provide: APP_GUARD,
       useClass: RolesGuard,

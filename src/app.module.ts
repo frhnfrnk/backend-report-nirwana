@@ -3,8 +3,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ReportsModule } from './reports/reports.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { APP_GUARD } from '@nestjs/core';
-import { RolesGuard } from './auth/roles.guard';
+import { AuthGuard } from './auth/auth.guard';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { RolesGuard } from './auth/roles.guard';
     }),
     AuthModule,
     ReportsModule,
+    CloudinaryModule,
   ],
 })
 export class AppModule {}

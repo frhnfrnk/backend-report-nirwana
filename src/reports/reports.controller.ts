@@ -6,33 +6,43 @@ import {
   Param,
   Body,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { ReportsService } from './reports.service';
-import { AuthGuard } from '@nestjs/passport';
 import { Roles } from 'src/auth/roles.decorator';
 import { Role } from 'src/auth/schemas/user.schema';
 import { CreateReportDto } from './create-report.dto';
 import { FollowUpDto } from './followup.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { UpdateReportDto } from './update-report.dto';
 
 @Controller('reports')
 export class ReportsController {
   constructor(private reportsService: ReportsService) {}
 
-  @UseGuards(AuthGuard())
-  @Roles(Role.PETUGAS)
+  @UseGuards(AuthGuard)
+  @Roles(Role.USER)
   @Post()
-  async createReport(@Body() createReportDto: CreateReportDto) {
-    return this.reportsService.create(createReportDto);
+  async createReport(@Body() createReportDto: CreateReportDto, @Req() req) {
+    return this.reportsService.create(createReportDto, req.user);
   }
 
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard)
   @Roles(Role.PETUGAS)
   @Get()
   async findAllReports() {
     return this.reportsService.findAll();
   }
 
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard)
+  @Roles(Role.USER)
+  @Get('/history')
+  async findUserReports(@Req() req) {
+    return this.reportsService.findUserReports(req.user);
+  }
+
+  @UseGuards(AuthGuard)
   @Put(':id/status')
   async updateReportStatus(
     @Param('id') id: string,
@@ -41,7 +51,7 @@ export class ReportsController {
     return this.reportsService.updateStatus(id, status);
   }
 
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard)
   @Roles(Role.PETUGAS)
   @Put('/follow-up/:id')
   async followUpReport(
@@ -51,10 +61,10 @@ export class ReportsController {
     return this.reportsService.followUp(id, FollowUpDto);
   }
 
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard)
   @Roles(Role.PETUGAS)
   @Put('/done/:id')
-  async setDone(@Param('id') id: string) {
-    return this.reportsService.setDone(id);
+  async setDone(@Param('id') id: string, @Body() updateDto: UpdateReportDto) {
+    return this.reportsService.setDone(id, updateDto);
   }
 }

@@ -1,15 +1,28 @@
+import {
+  IsString,
+  IsArray,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+} from 'class-validator';
 export class CreateReportDto {
+  @IsString()
+  @IsNotEmpty()
   name: string;
-  desa: string;
-  image: string;
+
+  @IsArray()
+  @IsString({ each: true })
+  image: string[];
+
+  @IsString()
+  @IsEnum(['Sampah', 'Infrastruktur'])
   category: string;
-  location: {
-    coordinates: number[];
-    address: string;
-  };
-  status?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-  pelapor: string;
-  petugas?: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  latitude: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  longitude: number;
 }

@@ -5,6 +5,8 @@ import { Report, ReportDocument } from './report.schema';
 import { CreateReportDto } from './create-report.dto';
 import { FollowUpDto } from './followup.dto';
 import axios from 'axios';
+import { User } from 'src/auth/schemas/user.schema';
+import { UpdateReportDto } from './update-report.dto';
 
 @Injectable()
 export class ReportsService {
@@ -14,18 +16,22 @@ export class ReportsService {
 
   private readonly locationIQApiKey = process.env.LOCATIONIQ_API_KEY;
 
-  async create(createReportDto: CreateReportDto): Promise<Report> {
-    const { coordinates } = createReportDto.location;
-    const latitude = coordinates[0];
-    const longitude = coordinates[1];
-
+  async create(createReportDto: CreateReportDto, user: User): Promise<Report> {
     // Reverse Geocoding menggunakan LocationIQ
-    const locationData = await this.reverseGeocode(latitude, longitude);
+    const locationData = await this.reverseGeocode(
+      createReportDto.latitude,
+      createReportDto.longitude,
+    );
 
-    // Update address di createReportDto
-    createReportDto.location.address = locationData.display_name;
+    const report = {
+      ...createReportDto,
+      pelapor: user._id,
+      address: locationData.display_name,
+      desa: locationData.address.village,
+      petugas: null,
+    };
 
-    const createdReport = new this.reportModel(createReportDto);
+    const createdReport = new this.reportModel(report);
     return createdReport.save();
   }
 
@@ -41,7 +47,8 @@ export class ReportsService {
   }
 
   async findAll(): Promise<Report[]> {
-    return this.reportModel.find().exec();
+    const data = await this.reportModel.find().populate('pelapor').exec();
+    return data;
   }
 
   async updateStatus(reportId: string, status: string): Promise<Report> {
@@ -60,10 +67,13 @@ export class ReportsService {
       .exec();
   }
 
-  async setDone(id: string): Promise<Report> {
-    return this.reportModel
-      .findByIdAndUpdate(id, { status: 'Selesai' }, { new: true })
-      .exec();
+  async setDone(id: string, updateDto: UpdateReportDto): Promise<Report> {
+    const image = updateDto.imageDone;
+    return this.reportModel.findByIdAndUpdate(
+      id,
+      { status: 'Resolved', imageDone: image },
+      { new: true },
+    );
   }
 
   async findById(id: string): Promise<Report> {
@@ -84,5 +94,9 @@ export class ReportsService {
       throw new NotFoundException(`No reports found in desa: ${desa}`);
     }
     return reports;
+  }
+
+  async findUserReports(user: any): Promise<Report[]> {
+    return this.reportModel.find({ pelapor: user._id }).exec();
   }
 }

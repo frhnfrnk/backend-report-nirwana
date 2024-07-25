@@ -29,7 +29,9 @@ export class AuthService {
       role,
     });
 
-    const token = this.jwtService.sign({ id: user._id });
+    const payload = { sub: user._id, email: user.email, _id: user._id };
+
+    const token = await this.jwtService.signAsync(payload);
 
     return { token, user };
   }
@@ -45,11 +47,15 @@ export class AuthService {
 
     const isPasswordMatched = await bcrypt.compare(password, user.password);
 
+    user.password = undefined;
+
     if (!isPasswordMatched) {
       throw new UnauthorizedException('Invalid email or password');
     }
 
-    const token = this.jwtService.sign({ id: user._id });
+    const payload = { sub: user._id, email: user.email, _id: user._id };
+
+    const token = await this.jwtService.signAsync(payload);
 
     return { token, user };
   }

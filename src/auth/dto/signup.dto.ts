@@ -1,4 +1,10 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsPhoneNumber,
+  IsString,
+  MinLength,
+} from 'class-validator';
 
 export class SignUpDto {
   @IsNotEmpty()
@@ -19,6 +25,6 @@ export class SignUpDto {
   readonly role: string;
 
   @IsNotEmpty()
-  @IsString()
+  @IsPhoneNumber(null, { message: 'Please enter a correct phone number' })
   readonly phoneNumber: string;
 }
