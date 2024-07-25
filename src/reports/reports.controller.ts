@@ -14,7 +14,7 @@ import { CreateReportDto } from './create-report.dto';
 import { FollowUpDto } from './followup.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { UpdateReportDto } from './update-report.dto';
-import { Roles } from 'src/auth/roles.decorator';
+import { Roles } from '../auth/roles.decorator';
 
 @Controller('reports')
 export class ReportsController {
