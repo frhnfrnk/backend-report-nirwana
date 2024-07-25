@@ -9,10 +9,10 @@ import {
   Req,
 } from '@nestjs/common';
 import { ReportsService } from './reports.service';
-import { Role } from 'src/auth/schemas/user.schema';
+import { Role } from '../auth/schemas/user.schema';
 import { CreateReportDto } from './create-report.dto';
 import { FollowUpDto } from './followup.dto';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { AuthGuard } from '../auth/auth.guard';
 import { UpdateReportDto } from './update-report.dto';
 import { Roles } from '../auth/roles.decorator';
 
